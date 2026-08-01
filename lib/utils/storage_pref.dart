@@ -671,6 +671,11 @@ abstract final class Pref {
   static bool get autoPlayEnable =>
       _setting.get(SettingBoxKey.autoPlayEnable, defaultValue: false);
 
+  static bool get enableCastReceive => _setting.get(
+    SettingBoxKey.enableCastReceive,
+    defaultValue: true,
+  );
+
   static bool get pipNoDanmaku =>
       _setting.get(SettingBoxKey.pipNoDanmaku, defaultValue: false);
 

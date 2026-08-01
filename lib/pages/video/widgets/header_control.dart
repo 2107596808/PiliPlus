@@ -1875,6 +1875,20 @@ class HeaderControlState extends State<HeaderControl>
                       ),
                     ),
                   ),
+                  SizedBox(
+                    width: btnWidth,
+                    height: btnHeight,
+                    child: IconButton(
+                      tooltip: '推送到设备',
+                      style: btnStyle,
+                      onPressed: videoDetailCtr.onPushToDevice,
+                      icon: const Icon(
+                        Icons.screen_share,
+                        size: 19,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
                 ],
                 if (plPlayerController.enableSponsorBlock)
                   SizedBox(

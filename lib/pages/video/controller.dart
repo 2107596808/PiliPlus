@@ -34,6 +34,8 @@ import 'package:PiliPlus/models_new/video/video_detail/page.dart';
 import 'package:PiliPlus/models_new/video/video_pbp/data.dart';
 import 'package:PiliPlus/models_new/video/video_play_info/subtitle.dart';
 import 'package:PiliPlus/models_new/video/video_stein_edgeinfo/data.dart';
+import 'package:PiliPlus/pages/cast_device/view.dart';
+import 'package:PiliPlus/services/cast/cast_models.dart';
 import 'package:PiliPlus/pages/audio/view.dart';
 import 'package:PiliPlus/pages/common/publish/publish_route.dart';
 import 'package:PiliPlus/pages/search/widgets/search_text.dart';
@@ -1583,5 +1585,36 @@ class VideoDetailController extends GetxController
     } else {
       res.toast();
     }
+  }
+
+  /// 将正在播放的视频推送到同款 App 设备
+  Future<void> onPushToDevice() async {
+    String? title;
+    try {
+      if (isUgc) {
+        title = Get.find<UgcIntroController>(
+          tag: heroTag,
+        ).videoDetail.value.title;
+      } else {
+        title = Get.find<PgcIntroController>(
+          tag: heroTag,
+        ).videoDetail.value.title;
+      }
+    } catch (_) {}
+    final payload = CastPushPayload(
+      type: isUgc ? 'ugc' : 'pgc',
+      bvid: bvid,
+      aid: aid,
+      cid: cid.value,
+      epId: epId,
+      seasonId: seasonId,
+      pgcType: pgcType,
+      title: title ?? '',
+      cover: cover.value,
+      positionSec: plPlayerController.positionInMilliseconds ~/ 1000,
+    );
+    Get.to(
+      CastDeviceListPage(payload: payload, from: await CastDeviceName.get()),
+    );
   }
 }

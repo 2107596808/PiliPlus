@@ -28,6 +28,7 @@ import 'package:PiliPlus/pages/setting/widgets/select_dialog.dart';
 import 'package:PiliPlus/pages/setting/widgets/slider_dialog.dart';
 import 'package:PiliPlus/pages/video/reply/widgets/reply_item_grpc.dart';
 import 'package:PiliPlus/plugin/pl_player/controller.dart';
+import 'package:PiliPlus/services/cast/cast_listener.dart';
 import 'package:PiliPlus/services/download/download_service.dart';
 import 'package:PiliPlus/utils/accounts.dart';
 import 'package:PiliPlus/utils/cache_manager.dart';
@@ -72,6 +73,20 @@ List<SettingsModel> get extraSettings => [
       onTap: _showDownPathDialog,
     ),
   ],
+  SwitchModel(
+    title: '接收设备推送',
+    subtitle: '允许同款 App 设备将正在播放的视频推送到本机',
+    leading: const Icon(Icons.screen_share_outlined),
+    setKey: SettingBoxKey.enableCastReceive,
+    defaultVal: true,
+    onChanged: (value) {
+      if (value) {
+        CastListener.instance.start();
+      } else {
+        CastListener.instance.stop();
+      }
+    },
+  ),
   SplitModel(
     normalModel: const NormalModel.split(
       title: '空降助手',
