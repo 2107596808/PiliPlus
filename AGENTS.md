@@ -24,6 +24,31 @@ Flutter 版本通过 FVM 固定为 3.44.8（`.fvmrc`），请使用 `fvm`：
 - `fvm dart run tool/jnigen.dart` — 重新生成 JNI 绑定。
 - 发布构建：`pub get` 后先运行 `lib/scripts/patch.ps1 <平台>` 应用 Flutter SDK 补丁（平台行为依赖这些补丁），再执行 `fvm flutter build <apk|windows|...> --release`。
 
+## 发布流程
+
+本仓库发布到 `2107596808/PiliPlus`，更新检查也指向该仓库。本地发布步骤：
+
+1. 版本号：`versionName` 与 pubspec 一致（当前 2.1.0），`versionCode` 取 `git rev-list --count HEAD`（当前 5168）。
+2. 打 Android v8a 包时必须传 `pili.*` dart-define（`pili.time` 为当前 Unix 秒，`pili.hash` 为 `git rev-parse HEAD`）；否则 `BuildConfig.buildTime` 为 0，安装后每次启动都会误报更新：
+
+```powershell
+flutter build apk --release --split-per-abi --target-platform android-arm64 `
+  --build-name <versionName> --build-number <versionCode> `
+  --dart-define=pili.code=<versionCode> --dart-define=pili.name=<versionName> `
+  --dart-define=pili.hash=<commitHash> --dart-define=pili.time=<unixSeconds>
+```
+
+3. 发布到 GitHub：
+
+```bash
+git tag v<versionName> && git push origin v<versionName>
+gh release create v<versionName> build/app/outputs/flutter-apk/app-arm64-v8a-release.apk \
+  --title "PiliPlus v<versionName>" --notes-file <notes.md>
+# 覆盖已有附件：gh release upload v<versionName> <apk> --clobber
+```
+
+注意事项：仅发布 arm64-v8a 包；无 `android/key.properties` 时使用 debug 签名，正式分发前需配置；旧包名（`com.example.piliplus`）应用升级前需先卸载；更新检查用 release 的创建时间与 `pili.time` 比较，因此时间戳必须新鲜。
+
 ## 编码风格与命名规范
 
 - 遵循 `analysis_options.yaml`：`flutter_lints` 外加严格规则（`avoid_print`、`prefer_const_constructors`、`always_declare_return_types`、强制 package 导入）。
