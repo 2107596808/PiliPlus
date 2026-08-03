@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <header>
+      <h1>PiliPlus 推送</h1>
+    </header>
+
+    <section class="video">
+      <div class="video-title" id="videoTitle">未识别到 B 站视频页</div>
+      <div class="video-meta" id="videoMeta"></div>
+    </section>
+
+    <section>
+      <div class="section-title">设备列表</div>
+      <div id="deviceList" class="device-list"></div>
+      <div class="add-row">
+        <input id="ipInput" type="text" placeholder="设备 IP，如 192.168.1.10" />
+        <button id="addBtn">添加并检测</button>
+      </div>
+    </section>
+
+    <footer id="status"></footer>
+    <script src="popup.js"></script>
+  </body>
+</html>

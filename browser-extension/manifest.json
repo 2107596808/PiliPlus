@@ -1,0 +1,19 @@
+{
+  "manifest_version": 3,
+  "name": "PiliPlus 推送",
+  "version": "1.0.0",
+  "description": "把电脑浏览器正在播放的 Bilibili 视频推送到局域网内的 PiliPlus 设备",
+  "permissions": ["storage"],
+  "host_permissions": ["http://*/*", "https://*/*"],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "PiliPlus 推送"
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://www.bilibili.com/*", "*://m.bilibili.com/*"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}

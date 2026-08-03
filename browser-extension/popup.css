@@ -1,0 +1,101 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  width: 320px;
+  margin: 0;
+  padding: 12px;
+  font-family: system-ui, "Microsoft YaHei", sans-serif;
+  font-size: 13px;
+  color: #222;
+}
+
+header h1 {
+  margin: 0 0 10px;
+  font-size: 16px;
+}
+
+.video {
+  margin-bottom: 12px;
+  padding: 10px;
+  border: 1px solid #e3e5e7;
+  border-radius: 8px;
+  background: #fafafa;
+}
+
+.video-title {
+  font-weight: 600;
+  word-break: break-all;
+}
+
+.video-meta {
+  margin-top: 4px;
+  color: #888;
+}
+
+.section-title {
+  margin: 10px 0 6px;
+  font-weight: 600;
+}
+
+.device-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.empty {
+  color: #999;
+}
+
+.device-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.device-label {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+button {
+  padding: 5px 10px;
+  border: none;
+  border-radius: 6px;
+  background: #00a1d6;
+  color: #fff;
+  cursor: pointer;
+}
+
+button:disabled {
+  background: #c8ccd0;
+  cursor: not-allowed;
+}
+
+button.del {
+  background: transparent;
+  color: #999;
+}
+
+.add-row {
+  display: flex;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.add-row input {
+  flex: 1;
+  padding: 6px 8px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+}
+
+footer {
+  margin-top: 10px;
+  min-height: 16px;
+  color: #666;
+}

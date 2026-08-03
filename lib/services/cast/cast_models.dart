@@ -7,11 +7,13 @@ import 'package:device_info_plus/device_info_plus.dart';
 ///
 /// 发现: 发送端 UDP 广播 `disc`，接收端应答 `hello`。
 /// 推送: 发送端 TCP 发送 `push`，接收端应答 `ack`。
+/// 浏览器: 扩展通过 HTTP `POST /push` 推送、`GET /ping` 探测。
 abstract final class CastProtocol {
   static const String appId = 'com.shaoy.piliplus';
   static const int version = 1;
   static const int tcpPort = 26980;
   static const int udpPort = 26981;
+  static const int httpPort = 26982;
 }
 
 /// 局域网内一台可接收推送的设备

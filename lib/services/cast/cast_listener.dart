@@ -14,6 +14,7 @@ class CastListener {
 
   ServerSocket? _tcpServer;
   RawDatagramSocket? _udp;
+  HttpServer? _httpServer;
   bool _started = false;
 
   /// 收到推送后的回调，参数为推送内容与发送端设备名
@@ -22,7 +23,7 @@ class CastListener {
   Future<void> start() async {
     if (_started) return;
     _started = true;
-    await Future.wait([_startTcp(), _startUdp()]);
+    await Future.wait([_startTcp(), _startUdp(), _startHttp()]);
   }
 
   Future<void> stop() async {
@@ -31,6 +32,8 @@ class CastListener {
     _tcpServer = null;
     _udp?.close();
     _udp = null;
+    await _httpServer?.close();
+    _httpServer = null;
   }
 
   Future<void> _startTcp() async {
@@ -58,6 +61,103 @@ class CastListener {
       _started = false;
       logger.w('CastListener: UDP 监听启动失败 $e');
     }
+  }
+
+  Future<void> _startHttp() async {
+    try {
+      _httpServer = await HttpServer.bind(
+        InternetAddress.anyIPv4,
+        CastProtocol.httpPort,
+      );
+      _httpServer!.listen(_onHttpRequest, onError: _logError);
+    } catch (e) {
+      _started = false;
+      logger.w('CastListener: HTTP 监听启动失败 $e');
+    }
+  }
+
+  void _onHttpRequest(HttpRequest request) {
+    final response = request.response;
+    response.headers
+      ..set('Access-Control-Allow-Origin', '*')
+      ..set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+      ..set('Access-Control-Allow-Headers', 'Content-Type');
+    if (request.method == 'OPTIONS') {
+      response
+        ..statusCode = HttpStatus.noContent
+        ..close();
+      return;
+    }
+    if (request.method == 'GET' && request.uri.path == '/ping') {
+      _handlePing(response);
+      return;
+    }
+    if (request.method == 'POST' && request.uri.path == '/push') {
+      _handlePush(request, response);
+      return;
+    }
+    response
+      ..statusCode = HttpStatus.notFound
+      ..headers.contentType = ContentType.json
+      ..write(jsonEncode({'error': 'not found'}))
+      ..close();
+  }
+
+  void _handlePing(HttpResponse response) {
+    CastDeviceName.get().then((name) {
+      response
+        ..statusCode = HttpStatus.ok
+        ..headers.contentType = ContentType.json
+        ..write(
+          jsonEncode({
+            'ok': true,
+            'name': name,
+            'app': CastProtocol.appId,
+            'v': CastProtocol.version,
+            'receiving': Pref.enableCastReceive,
+          }),
+        )
+        ..close();
+    });
+  }
+
+  Future<void> _handlePush(
+    HttpRequest request,
+    HttpResponse response,
+  ) async {
+    final body = await utf8.decoder.bind(request).join();
+    final msg = CastMessage.tryParse(body);
+    final payload = msg?.payload;
+    if (msg == null || msg.type != 'push' || !_isValid(msg)) {
+      _httpBadRequest(response, 'invalid message');
+      return;
+    }
+    if (payload == null || payload.cid <= 0) {
+      _httpBadRequest(response, 'invalid payload');
+      return;
+    }
+    if (!Pref.enableCastReceive) {
+      response
+        ..statusCode = HttpStatus.serviceUnavailable
+        ..headers.contentType = ContentType.json
+        ..write(jsonEncode({'error': 'cast receive disabled'}))
+        ..close();
+      return;
+    }
+    response
+      ..statusCode = HttpStatus.ok
+      ..headers.contentType = ContentType.json
+      ..write(jsonEncode(CastMessage.ack(id: msg.id).toJson()))
+      ..close();
+    onPush?.call(payload, msg.from ?? '');
+  }
+
+  void _httpBadRequest(HttpResponse response, String error) {
+    response
+      ..statusCode = HttpStatus.badRequest
+      ..headers.contentType = ContentType.json
+      ..write(jsonEncode({'error': error}))
+      ..close();
   }
 
   void _onUdpEvent(RawSocketEvent event) {
