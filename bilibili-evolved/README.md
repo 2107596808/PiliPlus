@@ -10,7 +10,7 @@
 2. 打开脚本设置面板 → 组件管理，粘贴以下链接安装：
 
 ```
-https://raw.githubusercontent.com/2107596808/PiliPlus/master/bilibili-evolved/dist/push-to-piliplus.js
+https://raw.githubusercontent.com/2107596808/PiliPlus/main/bilibili-evolved/dist/push-to-piliplus.js
 ```
 
 3. 打开任意 B 站视频播放页，在播放器控制栏点击「推送到 PiliPlus」按钮。
