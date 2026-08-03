@@ -119,6 +119,29 @@ const pingDevice = async (ip: string): Promise<CastDevice | null> => {
   }
 }
 
+/** 生成待尝试的主机名列表：IP 原样；裸主机名先试原样，失败再补 .local 后缀 */
+const getHostCandidates = (host: string): string[] => {
+  const trimmed = host.trim()
+  if (!trimmed) {
+    return []
+  }
+  const candidates = [trimmed]
+  if (!trimmed.includes('.') && !trimmed.includes(':')) {
+    candidates.push(`${trimmed}.local`)
+  }
+  return candidates
+}
+
+const findDevice = async (host: string): Promise<CastDevice | null> => {
+  for (const candidate of getHostCandidates(host)) {
+    const device = await pingDevice(candidate)
+    if (device) {
+      return device
+    }
+  }
+  return null
+}
+
 const scanSubnet = async (
   prefix: string,
   onProgress?: (found: CastDevice[]) => void,
@@ -230,11 +253,11 @@ const refreshSavedDevices = async () => {
     return
   }
   const options = popup.options
-  const ips = options.deviceIps
+  const hosts = options.deviceIps
     .split(/\r?\n/)
     .map(ip => ip.trim())
     .filter(Boolean)
-  const saved = (await Promise.all(ips.map(ip => pingDevice(ip)))).filter(
+  const saved = (await Promise.all(hosts.map(host => findDevice(host)))).filter(
     (device): device is CastDevice => device !== null,
   )
   if (!popup) {
@@ -309,7 +332,7 @@ const showPopup = async (videoInfo: PushedVideoInfo, options: PushOptions) => {
       <div class="be-push-status"></div>
       <ul class="be-push-devices"></ul>
       <footer class="be-push-toolbar">
-        <input class="be-push-ip-input" placeholder="输入设备 IP，如 192.168.1.100" />
+        <input class="be-push-ip-input" placeholder="设备 IP 或主机名，如 192.168.1.100 / W202DS.local" />
         <button class="be-push-button be-push-add" type="button">添加</button>
         <button class="be-push-button be-push-scan" type="button">扫描</button>
       </footer>
@@ -345,20 +368,20 @@ const showPopup = async (videoInfo: PushedVideoInfo, options: PushOptions) => {
   })
   const ipInput = root.querySelector('.be-push-ip-input') as HTMLInputElement
   root.querySelector('.be-push-add')?.addEventListener('click', async () => {
-    const ip = ipInput.value.trim()
-    if (!ip) {
+    const host = ipInput.value.trim()
+    if (!host) {
       return
     }
-    setStatus(`正在连接 ${ip}…`)
-    const device = await pingDevice(ip)
+    setStatus(`正在连接 ${host}…`)
+    const device = await findDevice(host)
     if (!popup) {
       return
     }
     if (!device) {
-      setStatus('无法连接该设备，请确认 IP 正确且设备已安装新版 PiliPlus')
+      setStatus(`无法连接 ${host}，请确认 IP/主机名正确且设备已安装新版 PiliPlus`)
       return
     }
-    popup.found.set(ip, device)
+    popup.found.set(device.ip, device)
     renderDeviceList([...popup.found.values()])
     setStatus(`已添加 ${device.name}（${device.receiving ? '接收中' : '未开启接收'}）`)
     ipInput.value = ''
