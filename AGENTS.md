@@ -10,6 +10,7 @@ Dart 源码位于 `lib/`：
 - `http/`、`grpc/`、`tcp/` — 网络层；`services/` — 全局服务（账号、下载）；`models/` 与 `models_new/` — 数据模型；`plugin/` — 功能模块（播放器）；`utils/` — 工具函数与扩展。
 - `assets/` — 图片、字体、着色器与截图。
 - `android/`、`ios/`、`windows/`、`linux/`、`macos/` — 平台代码与打包配置；`tool/` — 代码生成；`lib/scripts/` — CI 补丁与构建脚本。
+- `browser-extension/` — 独立 MV3 浏览器扩展（电脑端推送到手机）；`bilibili-evolved/` — Bilibili-Evolved 组件源码与编译产物，两者复用同一套 Cast HTTP 协议（`lib/services/cast/`，端口 26982）。
 - 目前没有 `test/` 目录，新增测试时放在 `test/` 下。
 
 ## 构建、测试与开发命令
