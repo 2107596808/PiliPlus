@@ -380,6 +380,10 @@ const entry: ComponentEntry<PushOptions> = async ({ settings }) => {
     icon: 'mdi-send',
     order: 100,
     action: async () => {
+      const video = await playerAgent.query.video.element()
+      if (video instanceof HTMLVideoElement) {
+        video.pause()
+      }
       const info = await readVideoInfo()
       if (!info.cid || (!info.bvid && !info.epId)) {
         Toast.error('未识别到可推送的视频，请在视频播放页使用', '推送到 PiliPlus')
