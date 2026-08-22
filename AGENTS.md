@@ -15,7 +15,7 @@ Dart 源码位于 `lib/`：
 
 ## 构建、测试与开发命令
 
-Flutter 版本通过 FVM 固定为 3.44.8（`.fvmrc`），请使用 `fvm`：
+Flutter 版本通过 FVM 固定为 3.47.1（`.fvmrc`），请使用 `fvm`：
 
 - `fvm flutter pub get` — 安装依赖（部分为 Git fork，改动依赖时同步更新 `pubspec.lock`）。
 - `fvm flutter run -d windows|linux|macos|<设备>` — 本地运行。
@@ -29,7 +29,7 @@ Flutter 版本通过 FVM 固定为 3.44.8（`.fvmrc`），请使用 `fvm`：
 
 本仓库发布到 `2107596808/PiliPlus`，更新检查也指向该仓库。本地发布步骤：
 
-1. 版本号：`versionName` 与 pubspec 一致（当前 2.1.0），`versionCode` 取 `git rev-list --count HEAD`（当前 5168）。
+1. 版本号：`versionName` 与 pubspec 一致（当前 2.1.1），`versionCode` 取 `git rev-list --count HEAD`（当前 5237）。
 2. 打 Android v8a 包时必须传 `pili.*` dart-define（`pili.time` 为当前 Unix 秒，`pili.hash` 为 `git rev-parse HEAD`）；否则 `BuildConfig.buildTime` 为 0，安装后每次启动都会误报更新：
 
 ```powershell
