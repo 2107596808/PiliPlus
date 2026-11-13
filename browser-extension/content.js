@@ -51,9 +51,30 @@
     return info;
   }
 
+  // 非视频页（动态、专栏、直播间、收藏夹）也支持整页链接推送
+  function pageLinkInfo() {
+    return {
+      type: 'link',
+      bvid: null,
+      aid: null,
+      cid: null,
+      epId: null,
+      seasonId: null,
+      title: pageTitle(),
+      cover: '',
+      url: location.href,
+      position: 0,
+    };
+  }
+
   chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
     if (message?.type === 'getVideoInfo') {
-      sendResponse(parseVideoPage());
+      const info = parseVideoPage();
+      if (!info.bvid && !info.epId) {
+        sendResponse(pageLinkInfo());
+        return;
+      }
+      sendResponse(info);
     }
   });
 })();

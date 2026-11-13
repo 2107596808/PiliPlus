@@ -29,6 +29,7 @@ import 'package:PiliPlus/plugin/pl_player/models/play_status.dart';
 import 'package:PiliPlus/plugin/pl_player/models/video_fit_type.dart';
 import 'package:PiliPlus/plugin/pl_player/utils/danmaku_options.dart';
 import 'package:PiliPlus/plugin/pl_player/utils/fullscreen.dart';
+import 'package:PiliPlus/services/cast/cast_sync_service.dart';
 import 'package:PiliPlus/services/service_locator.dart';
 import 'package:PiliPlus/utils/accounts.dart';
 import 'package:PiliPlus/utils/android/android_helper.dart';
@@ -1055,6 +1056,8 @@ class PlPlayerController with BlockConfigMixin, AudioNormalizationMixin {
         for (final element in _statusListeners) {
           element(playing ? .playing : .paused);
         }
+
+        CastSyncService.instance.onLocalStateChanged();
 
         final seconds = videoPlayerController!.state.position.inSeconds;
         if (seconds != 0) {

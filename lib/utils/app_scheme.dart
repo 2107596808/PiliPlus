@@ -437,6 +437,16 @@ abstract final class PiliScheme {
           off: off,
           parameters: parameters,
         );
+      case 'piliplus':
+        // piliplus://pair?ip=192.168.1.10&port=26982 —— 扫码直连本机
+        if (host == 'pair') {
+          final ip = uri.queryParameters['ip'];
+          if (ip == null || ip.isEmpty) return false;
+          final port = int.tryParse(uri.queryParameters['port'] ?? '') ?? 0;
+          Get.toNamed('/castLocal', arguments: {'ip': ip, 'port': port});
+          return true;
+        }
+        return false;
       default:
         final aid = IdUtils.avRegexExact.matchAsPrefix(path)?.group(1);
         final bvid = IdUtils.bvRegexExact.matchAsPrefix(path)?.group(0);

@@ -694,6 +694,9 @@ abstract final class Pref {
     defaultValue: true,
   );
 
+  static bool get enableCastSync =>
+      _setting.get(SettingBoxKey.enableCastSync, defaultValue: false);
+
   static bool get pipNoDanmaku =>
       _setting.get(SettingBoxKey.pipNoDanmaku, defaultValue: false);
 

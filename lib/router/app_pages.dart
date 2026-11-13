@@ -4,7 +4,10 @@ import 'package:PiliPlus/pages/audio/view.dart';
 import 'package:PiliPlus/pages/blacklist/view.dart';
 import 'package:PiliPlus/pages/bubble/view.dart';
 import 'package:PiliPlus/pages/danmaku_block/view.dart';
+import 'package:PiliPlus/pages/cast_device/local_view.dart';
+import 'package:PiliPlus/pages/cast_device/sync_view.dart';
 import 'package:PiliPlus/pages/dlna/view.dart';
+import 'package:PiliPlus/services/cast/cast_models.dart';
 import 'package:PiliPlus/pages/download/download/view.dart';
 import 'package:PiliPlus/pages/dynamics/view.dart';
 import 'package:PiliPlus/pages/dynamics_create_vote/view.dart';
@@ -173,6 +176,17 @@ class Routes {
     GetPage(name: '/sameFollowing', page: () => const FollowSamePage()),
     GetPage(name: '/download', page: () => const DownloadPage()),
     GetPage(name: '/dlna', page: () => const DLNAPage()),
+    GetPage(name: '/castLocal', page: () => const CastLocalPage()),
+    GetPage(
+      name: '/castSync',
+      page: () {
+        final args = Get.arguments as Map<String, dynamic>;
+        return CastSyncPage(
+          device: args['device'] as CastDevice,
+          from: args['from'] as String? ?? '',
+        );
+      },
+    ),
     GetPage(name: '/myReply', page: () => const MyReply()),
     GetPage(name: '/videoWeb', page: () => const MemberVideoWeb()),
     GetPage(name: '/ssWeb', page: () => const MemberSSWeb()),

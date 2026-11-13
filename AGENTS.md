@@ -10,7 +10,8 @@ Dart 源码位于 `lib/`：
 - `http/`、`grpc/`、`tcp/` — 网络层；`services/` — 全局服务（账号、下载）；`models/` 与 `models_new/` — 数据模型；`plugin/` — 功能模块（播放器）；`utils/` — 工具函数与扩展。
 - `assets/` — 图片、字体、着色器与截图。
 - `android/`、`ios/`、`windows/`、`linux/`、`macos/` — 平台代码与打包配置；`tool/` — 代码生成；`lib/scripts/` — CI 补丁与构建脚本。
-- `browser-extension/` — 独立 MV3 浏览器扩展（电脑端推送到手机）；`bilibili-evolved/` — Bilibili-Evolved 组件源码与编译产物，两者复用同一套 Cast HTTP 协议（`lib/services/cast/`，端口 26982）。
+- `browser-extension/` — 独立 MV3 浏览器扩展（电脑端推送到手机）；`bilibili-evolved/` — Bilibili-Evolved 组件源码与编译产物，两者复用同一套 Cast 协议 v2（`lib/services/cast/`）。
+- 设备互联为**单端口 26982**：`GET /ping` 探测、`POST /push` 推送、`POST /pair` 配对、`WS /ws` 长连接（一起看），UDP 26981 仅做发现。payload 按 `kind` 分为 `video`／`link`／`queue`／`sync`；配对后请求需带 `x-piliplus-token`，未配对设备沿用零配置推送。深链 `piliplus://pair?ip=&port=` 用于扫码直连。
 - `test/` — 登录配置、账号、音视频质量、CDN、DLNA 与桌面窗口边界等回归测试。
 
 ## 构建、测试与开发命令

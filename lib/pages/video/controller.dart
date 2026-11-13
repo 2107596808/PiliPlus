@@ -1675,7 +1675,7 @@ class VideoDetailController extends GetxController
         ).videoDetail.value.title;
       }
     } catch (_) {}
-    final payload = CastPushPayload(
+    final payload = CastVideoPayload(
       type: isUgc ? 'ugc' : 'pgc',
       bvid: bvid,
       aid: aid,
@@ -1689,6 +1689,27 @@ class VideoDetailController extends GetxController
     );
     Get.to(
       CastDeviceListPage(payload: payload, from: await CastDeviceName.get()),
+    );
+  }
+
+  /// 把当前页面链接推给同款设备，由对方用自己的路由打开
+  Future<void> onPushLinkToDevice() async {
+    final url = isUgc
+        ? 'https://www.bilibili.com/video/${bvid ?? ''}'
+        : isLoginVideo && epId != null
+        ? 'https://www.bilibili.com/bangumi/play/ep${epId!}'
+        : 'https://www.bilibili.com/bangumi/play/ss${seasonId ?? ''}';
+    String? title;
+    try {
+      title = isUgc
+          ? Get.find<UgcIntroController>(tag: heroTag).videoDetail.value.title
+          : Get.find<PgcIntroController>(tag: heroTag).videoDetail.value.title;
+    } catch (_) {}
+    Get.to(
+      CastDeviceListPage(
+        payload: CastLinkPayload(url: url, title: title ?? ''),
+        from: await CastDeviceName.get(),
+      ),
     );
   }
 }

@@ -10,7 +10,8 @@ import componentStyle from './style.scss'
 
 const HTTP_PORT = 26982
 const APP_ID = 'com.shaoy.piliplus'
-const PROTOCOL_VERSION = 1
+const PROTOCOL_VERSION = 2
+const TOKEN_HEADER = 'x-piliplus-token'
 
 interface PushOptions {
   deviceIps: string
@@ -178,6 +179,7 @@ const pushToDevice = async (
     app: APP_ID,
     from: senderName,
     payload: {
+      kind: 'video',
       type: info.type,
       bvid: info.bvid,
       aid: info.aid,
@@ -188,6 +190,7 @@ const pushToDevice = async (
       cover: info.cover,
       positionSec: info.positionSec,
     },
+    token: localStorage.getItem(`piliplus.token.${ip}`) || undefined,
   }
   try {
     const raw = await monkey<string>({
@@ -195,7 +198,10 @@ const pushToDevice = async (
       method: 'POST',
       timeout: 5000,
       responseType: 'text',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        ...(message.token ? { [TOKEN_HEADER]: message.token } : {}),
+      },
       data: JSON.stringify(message),
     })
     return JSON.parse(raw)?.t === 'ack'

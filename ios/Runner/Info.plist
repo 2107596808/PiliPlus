@@ -122,6 +122,7 @@
 				<key>CFBundleURLSchemes</key>
 				<array>
 					<string>bilibili</string>
+					<string>piliplus</string>
 				</array>
 			</dict>
 		</array>
@@ -132,7 +133,7 @@
 		<key>UIStatusBarHidden</key>
 		<false/>
 		<key>NSLocalNetworkUsageDescription</key>
-		<string>需要访问本地网络以发现和连接 DLNA 投屏设备</string>
+		<string>需要访问本地网络以发现同款设备、接收推送与投屏到 DLNA 设备</string>
 		<key>NSBonjourServices</key>
 		<array>
 			<string>_ssdp._udp</string>

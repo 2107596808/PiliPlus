@@ -1924,6 +1924,7 @@ class HeaderControlState extends State<HeaderControl>
                     tooltip: '推送到设备',
                     style: btnStyle,
                     onPressed: videoDetailCtr.onPushToDevice,
+                    onLongPress: videoDetailCtr.onPushLinkToDevice,
                     icon: const Icon(
                       Icons.screen_share,
                       size: 19,

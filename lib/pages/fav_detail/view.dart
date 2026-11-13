@@ -13,7 +13,9 @@ import 'package:PiliPlus/models_new/fav/fav_detail/media.dart';
 import 'package:PiliPlus/models_new/fav/fav_folder/list.dart';
 import 'package:PiliPlus/pages/common/page_order/page_order_btn_mixin.dart';
 import 'package:PiliPlus/pages/dynamics_repost/view.dart';
+import 'package:PiliPlus/pages/cast_device/view.dart';
 import 'package:PiliPlus/pages/fav_detail/controller.dart';
+import 'package:PiliPlus/services/cast/cast_models.dart';
 import 'package:PiliPlus/pages/fav_detail/widget/fav_video_card.dart';
 import 'package:PiliPlus/utils/bili_utils.dart';
 import 'package:PiliPlus/utils/grid.dart';
@@ -176,6 +178,50 @@ class _FavDetailPageState extends State<FavDetailPage>
     );
   }
 
+  /// 把整个收藏夹作为一个队列推送到同款设备
+  Future<void> _pushAll() async {
+    final state = controller.loadingState.value;
+    if (state is! Success<List<FavDetailItemModel>?>) {
+      SmartDialog.showToast('收藏夹还没有加载完成');
+      return;
+    }
+    final medias = state.response;
+    if (medias == null || medias.isEmpty) {
+      SmartDialog.showToast('这个收藏夹里没有视频');
+      return;
+    }
+    final items = <CastVideoPayload>[];
+    for (final item in medias) {
+      final bvid = item.bvid;
+      if (bvid == null || bvid.isEmpty) continue;
+      final cid = item.ugc?.firstCid ?? 0;
+      if (cid <= 0) continue; // 番剧条目没有 cid，跳过
+      items.add(
+        CastVideoPayload(
+          type: item.ogv == null ? 'ugc' : 'pgc',
+          bvid: bvid,
+          aid: item.id,
+          cid: cid,
+          title: item.title ?? '',
+          cover: item.cover ?? '',
+        ),
+      );
+    }
+    if (items.isEmpty) {
+      SmartDialog.showToast('没有可推送的视频');
+      return;
+    }
+    Get.to(
+      CastDeviceListPage(
+        payload: CastQueuePayload(
+          title: controller.folderInfo.value.title ?? '收藏夹',
+          items: items,
+        ),
+        from: await CastDeviceName.get(),
+      ),
+    );
+  }
+
   List<Widget> _actions(ThemeData theme) {
     return [
       IconButton(
@@ -209,6 +255,11 @@ class _FavDetailPageState extends State<FavDetailPage>
               );
       }),
       pageOrderBtn,
+      IconButton(
+        tooltip: '推送到设备',
+        onPressed: _pushAll,
+        icon: const Icon(Icons.screen_share),
+      ),
       Obx(
         () {
           return PopupMenuButton<FavOrderType>(

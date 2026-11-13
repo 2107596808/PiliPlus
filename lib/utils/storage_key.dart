@@ -32,7 +32,12 @@ abstract final class SettingBoxKey {
       showBatteryLevel = 'showBatteryLevel',
       playerVolume = 'playerVolume',
       maxVolume = 'maxVolume',
-      enableCastReceive = 'enableCastReceive';
+      enableCastReceive = 'enableCastReceive',
+      castToken = 'castToken',
+      castPeers = 'castPeers',
+      castPeerPrefix = 'castPeer_',
+      castRecentIps = 'castRecentIps',
+      enableCastSync = 'enableCastSync';
 
   static const String enableVerticalExpand = 'enableVerticalExpand',
       feedBackEnable = 'feedBackEnable',

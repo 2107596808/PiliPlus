@@ -41,7 +41,11 @@ pnpm tsx dev-tools/dev-server/command.ts build component video/push-to-piliplus 
 
 ## 协议
 
-复用 App 内置的 Cast 协议 v1（`lib/services/cast/cast_models.dart`）：
+复用 App 内置的 Cast 协议 v2（`lib/services/cast/cast_models.dart`）：
 
-- `GET http://<ip>:26982/ping` → `{ok, name, app, v, receiving}`
-- `POST http://<ip>:26982/push`，body 为 `{t:'push', id, v:1, app:'com.shaoy.piliplus', from, payload:{type, bvid, aid, cid, epId, seasonId, title, cover, positionSec}}` → `{t:'ack', ...}`
+- `GET http://<ip>:26982/ping` → `{ok, name, app, v, port, receiving, paired, sync, ws}`
+- `POST http://<ip>:26982/push`，body 为 `{t:'push', id, v:2, app:'com.shaoy.piliplus', from, payload, token}` → `{t:'ack', ...}`
+- `POST http://<ip>:26982/pair`：`{t:'pair_request', from}` 取配对码，`{t:'pair_submit', code}` 换令牌
+- `WS ws://<ip>:26982/ws`：`hello` 握手后双向收发 `sync` 消息，用于一起看
+
+`payload` 按 `kind` 分四类：`video`（视频）、`link`（任意链接，交给接收端路由打开）、`queue`（批量队列）、`sync`（同播控制）。未配对设备沿用 v1 的零配置推送；配对后请求需带 `x-piliplus-token` 头。

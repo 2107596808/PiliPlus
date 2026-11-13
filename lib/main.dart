@@ -13,7 +13,9 @@ import 'package:PiliPlus/pages/cast_device/push_dialog.dart';
 import 'package:PiliPlus/plugin/pl_player/utils/fullscreen.dart';
 import 'package:PiliPlus/router/app_pages.dart';
 import 'package:PiliPlus/services/account_service.dart';
+import 'package:PiliPlus/pages/cast_device/pair_dialog.dart';
 import 'package:PiliPlus/services/cast/cast_listener.dart';
+import 'package:PiliPlus/services/cast/cast_sync_service.dart';
 import 'package:PiliPlus/services/download/download_service.dart';
 import 'package:PiliPlus/services/logger.dart';
 import 'package:PiliPlus/services/service_locator.dart';
@@ -141,9 +143,14 @@ void main() async {
   RequestUtils.syncHistoryStatus();
 
   if (Pref.enableCastReceive) {
-    CastListener.instance.start();
+    CastListener.instance.start().ignore();
   }
   CastListener.instance.onPush = showCastPushDialog;
+  CastListener.instance.onSync = (payload, from) =>
+      CastSyncService.instance.applyRemote(payload, from);
+  CastListener.instance.onPairRequest = showCastPairCodeDialog;
+  CastListener.instance.onPeersChanged = (_) =>
+      CastSyncService.instance.broadcastLocal();
 
   SmartDialog.config.toast = SmartConfigToast(displayType: .onlyRefresh);
 

@@ -85,6 +85,7 @@
 
                 <data android:scheme="http" />
                 <data android:scheme="https" />
+                <data android:scheme="piliplus" />
                 <data android:host="*.bilibili.com" />
                 <data android:host="*.bilibili.cn" />
                 <data android:host="*.bilibili.tv" />

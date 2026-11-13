@@ -62,17 +62,26 @@ List<SettingsModel> get extraSettings => [
       defaultVal: Pref.enableDocProvider,
       onChanged: AndroidHelper.updateDocProvider,
     ),
+  NormalModel(
+    title: '互联与推送',
+    subtitle: '本机地址、配对与一起看',
+    leading: const Icon(Icons.devices_other),
+    onTap: (context, setState) => Get.toNamed('/castLocal'),
+  ),
   SwitchModel(
     title: '接收设备推送',
     subtitle: '允许同款 App 设备将正在播放的视频推送到本机',
     leading: const Icon(Icons.screen_share_outlined),
     setKey: SettingBoxKey.enableCastReceive,
     defaultVal: true,
-    onChanged: (value) {
+    onChanged: (value) async {
       if (value) {
-        CastListener.instance.start();
+        final ok = await CastListener.instance.start();
+        if (!ok) {
+          SmartDialog.showToast('端口 26982 被占用，接收推送启动失败');
+        }
       } else {
-        CastListener.instance.stop();
+        await CastListener.instance.stop();
       }
     },
   ),
