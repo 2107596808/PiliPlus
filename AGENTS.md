@@ -12,7 +12,7 @@ Dart 源码位于 `lib/`：
 - `android/`、`ios/`、`windows/`、`linux/`、`macos/` — 平台代码与打包配置；`tool/` — 代码生成；`lib/scripts/` — CI 补丁与构建脚本。
 - `browser-extension/` — 独立 MV3 浏览器扩展（电脑端推送到手机）；`bilibili-evolved/` — Bilibili-Evolved 组件源码与编译产物，两者复用同一套 Cast 协议 v2（`lib/services/cast/`）。
 - 设备互联为**单端口 26982**：`GET /ping` 探测、`POST /push` 推送、`POST /pair` 配对、`WS /ws` 长连接（一起看），UDP 26981 仅做发现。payload 按 `kind` 分为 `video`／`link`／`queue`／`sync`；配对后请求需带 `x-piliplus-token`，未配对设备沿用零配置推送。深链 `piliplus://pair?ip=&port=` 用于扫码直连。
-- `test/` — 登录配置、账号、音视频质量、CDN、DLNA 与桌面窗口边界等回归测试。
+- `test/` — 登录配置、账号、音视频质量、CDN、DLNA、Cast 协议与桌面窗口边界等回归测试。
 
 ## 构建、测试与开发命令
 
@@ -50,6 +50,13 @@ gh release create v<versionName> build/app/outputs/flutter-apk/app-arm64-v8a-rel
 ```
 
 注意事项：仅发布 arm64-v8a 包；无 `android/key.properties` 时使用 debug 签名，正式分发前需配置；旧包名（`com.example.piliplus`）应用升级前需先卸载；更新检查用 release 的创建时间与 `pili.time` 比较，因此时间戳必须新鲜。
+
+### 本机（Windows）构建踩过的坑
+
+- **Flutter SDK 补丁**：`lib/scripts/patch.ps1` 需要 `$env:GITHUB_WORKSPACE` 与 `$env:FLUTTER_ROOT`，直接在项目里跑会失败。实际做法是手动对 FVM 缓存里的 SDK worktree（`.dart_tool/fvm-local/versions/<ver>`）执行 `git apply --ignore-whitespace <patch>`；android 平台还需额外补 `bottom_sheet_android`、`scroll_view`、`navigator` 三个补丁，以及 `lib/scripts/material/bottom_sheet_android.patch`（打到 pub cache 的 `material_ui-<ver>`）。用 `git apply --reverse --check` 可判断某补丁是否已应用。
+- **引擎产物下载**：谷歌存储在本机代理下会 `HandshakeException` 中断，构建脚本需设 `FLUTTER_STORAGE_BASE_URL=https://storage.flutter-io.cn`。
+- **Maven 仓库**：`repo.maven.apache.org` 无论直连还是走代理都不可用（`repo1.maven.org` 正常），Gradle 会静默卡在解析阶段。解法是在 `~/.gradle/init.d/` 放一个 init 脚本，**改写既有仓库的 URL**（`dl.google.com`→aliyun google、`repo.maven.apache.org`→aliyun public、`plugins.gradle.org`→aliyun gradle-plugin），不要新增仓库——项目用 `prefer settings repositories`，新增会直接构建失败。Gradle 不读 `HTTPS_PROXY`，代理要写在 `~/.gradle/gradle.properties` 的 `systemProp.*`。
+- **时间戳顺序**：`pili.time` 必须晚于 Release 的 `created_at`，否则新装的包会立刻提示「有新版本」。先建 release 再改时间戳重建、用 `gh release upload --clobber` 覆盖即可。
 
 ## 编码风格与命名规范
 
