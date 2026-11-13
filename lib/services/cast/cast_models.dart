@@ -58,17 +58,17 @@ class CastPushPayload {
   });
 
   Map<String, dynamic> toJson() => {
-        'type': type,
-        'bvid': bvid,
-        'aid': aid,
-        'cid': cid,
-        'epId': epId,
-        'seasonId': seasonId,
-        'pgcType': pgcType,
-        'title': title,
-        'cover': cover,
-        'positionSec': positionSec,
-      };
+    'type': type,
+    'bvid': bvid,
+    'aid': aid,
+    'cid': cid,
+    'epId': epId,
+    'seasonId': seasonId,
+    'pgcType': pgcType,
+    'title': title,
+    'cover': cover,
+    'positionSec': positionSec,
+  };
 
   factory CastPushPayload.fromJson(Map<String, dynamic> json) =>
       CastPushPayload(
@@ -108,52 +108,52 @@ class CastMessage {
   });
 
   factory CastMessage.disc() => const CastMessage(
-        type: 'disc',
-        version: CastProtocol.version,
-        app: CastProtocol.appId,
-      );
+    type: 'disc',
+    version: CastProtocol.version,
+    app: CastProtocol.appId,
+  );
 
   factory CastMessage.hello({
     required String name,
     required int port,
   }) => CastMessage(
-        type: 'hello',
-        version: CastProtocol.version,
-        app: CastProtocol.appId,
-        name: name,
-        port: port,
-      );
+    type: 'hello',
+    version: CastProtocol.version,
+    app: CastProtocol.appId,
+    name: name,
+    port: port,
+  );
 
   factory CastMessage.push({
     required String id,
     required String from,
     required CastPushPayload payload,
   }) => CastMessage(
-        type: 'push',
-        id: id,
-        version: CastProtocol.version,
-        app: CastProtocol.appId,
-        from: from,
-        payload: payload,
-      );
+    type: 'push',
+    id: id,
+    version: CastProtocol.version,
+    app: CastProtocol.appId,
+    from: from,
+    payload: payload,
+  );
 
   factory CastMessage.ack({String? id}) => CastMessage(
-        type: 'ack',
-        id: id,
-        version: CastProtocol.version,
-        app: CastProtocol.appId,
-      );
+    type: 'ack',
+    id: id,
+    version: CastProtocol.version,
+    app: CastProtocol.appId,
+  );
 
   Map<String, dynamic> toJson() => {
-        't': type,
-        'id': id,
-        'v': version,
-        'app': app,
-        'from': from,
-        'name': name,
-        'port': port,
-        'payload': payload?.toJson(),
-      };
+    't': type,
+    'id': id,
+    'v': version,
+    'app': app,
+    'from': from,
+    'name': name,
+    'port': port,
+    'payload': payload?.toJson(),
+  };
 
   String toJsonString() => jsonEncode(toJson());
 

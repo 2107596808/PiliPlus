@@ -1,4 +1,5 @@
 import 'package:PiliPlus/common/skeleton/video_reply.dart';
+import 'package:PiliPlus/common/sliver_single_child_delegate.dart';
 import 'package:PiliPlus/common/style.dart';
 import 'package:PiliPlus/common/widgets/custom_icon.dart';
 import 'package:PiliPlus/common/widgets/dialog/dialog.dart';
@@ -12,6 +13,7 @@ import 'package:PiliPlus/http/loading_state.dart';
 import 'package:PiliPlus/models/common/image_type.dart';
 import 'package:PiliPlus/models/common/pgc_review_type.dart';
 import 'package:PiliPlus/models_new/pgc/pgc_review/list.dart';
+import 'package:PiliPlus/pages/article/view.dart';
 import 'package:PiliPlus/pages/pgc_review/child/controller.dart';
 import 'package:PiliPlus/pages/pgc_review/post/view.dart';
 import 'package:PiliPlus/utils/accounts.dart';
@@ -91,10 +93,12 @@ class _PgcReviewChildPageState extends State<PgcReviewChildPage>
   ) {
     switch (loadingState) {
       case Loading():
-        return SliverPrototypeExtentList.builder(
-          prototypeItem: const VideoReplySkeleton(),
-          itemBuilder: (_, _) => const VideoReplySkeleton(),
-          itemCount: 8,
+        return const SliverPrototypeExtentList(
+          prototypeItem: VideoReplySkeleton(),
+          delegate: SliverSingleChildDelegate(
+            count: 8,
+            child: VideoReplySkeleton(),
+          ),
         );
       case Success(:final response):
         if (response != null && response.isNotEmpty) {
@@ -183,12 +187,9 @@ class _PgcReviewChildPageState extends State<PgcReviewChildPage>
       type: MaterialType.transparency,
       child: InkWell(
         onTap: isLongReview
-            ? () => Get.toNamed(
-                '/articlePage',
-                parameters: {
-                  'id': item.articleId!.toString(),
-                  'type': 'read',
-                },
+            ? () => ArticlePage.toArticlePage(
+                id: item.articleId!.toString(),
+                type: .read,
               )
             : null,
         onLongPress: !isLongReview ? showMore : null,

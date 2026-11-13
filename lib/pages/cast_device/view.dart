@@ -5,7 +5,7 @@ import 'package:PiliPlus/common/widgets/view_sliver_safe_area.dart';
 import 'package:PiliPlus/services/cast/cast_client.dart';
 import 'package:PiliPlus/services/cast/cast_discovery.dart';
 import 'package:PiliPlus/services/cast/cast_models.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:get/get.dart';
 

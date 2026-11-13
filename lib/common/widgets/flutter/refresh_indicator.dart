@@ -312,11 +312,13 @@ class RefreshIndicatorState extends State<RefreshIndicator>
     // user dragging. It may be a result of ScrollController.jumpTo or ballistic scroll.
     // In this case, we don't want to trigger the refresh indicator.
     return _status == null &&
-        ((notification is ScrollStartNotification &&
-                notification.dragDetails != null) ||
-            (notification is ScrollUpdateNotification &&
-                notification.dragDetails != null)) &&
         notification.metrics.extentBefore == 0.0 &&
+        ((notification is OverscrollNotification &&
+                notification.dragDetails != null &&
+                notification.dragDetails!.delta.dy > 0) ||
+            (notification is ScrollUpdateNotification &&
+                notification.dragDetails != null &&
+                notification.dragDetails!.delta.dy > 0)) &&
         _start();
   }
 
@@ -520,16 +522,18 @@ class RefreshIndicatorState extends State<RefreshIndicator>
       body: child,
       scale: _scaleFactor,
       position: _positionFactor,
-      indicator: AnimatedBuilder(
-        animation: _positionController,
-        builder: (context, child) => RefreshProgressIndicator(
-          value: showIndeterminateIndicator ? null : _value.value,
-          valueColor: _valueColor,
-          backgroundColor: widget.backgroundColor,
-          strokeWidth: widget.strokeWidth,
-          elevation: widget.elevation,
-        ),
-      ),
+      indicator: _status == null
+          ? null
+          : AnimatedBuilder(
+              animation: _positionController,
+              builder: (context, child) => RefreshProgressIndicator(
+                value: showIndeterminateIndicator ? null : _value.value,
+                valueColor: _valueColor,
+                backgroundColor: widget.backgroundColor,
+                strokeWidth: widget.strokeWidth,
+                elevation: widget.elevation,
+              ),
+            ),
     );
 
     if (PlatformUtils.isDarwin) {

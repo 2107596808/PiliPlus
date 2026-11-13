@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:PiliPlus/http/browser_ua.dart';
 import 'package:PiliPlus/http/constants.dart';
 import 'package:PiliPlus/http/video.dart';
+import 'package:PiliPlus/models/common/video/base_quality.dart';
 import 'package:PiliPlus/models/common/video/cdn_type.dart';
 import 'package:PiliPlus/models/common/video/video_type.dart';
 import 'package:PiliPlus/models/video/play/url.dart';
@@ -16,7 +17,8 @@ class SelectDialog<T> extends StatelessWidget {
   final T? value;
   final String title;
   final List<(T, String)> values;
-  final Widget Function(BuildContext, int)? subtitleBuilder;
+  final Widget? Function(BuildContext context, int index, T value)?
+  subtitleBuilder;
   final bool toggleable;
 
   const SelectDialog({
@@ -54,11 +56,8 @@ class SelectDialog<T> extends StatelessWidget {
                     toggleable: toggleable,
                     dense: true,
                     value: item.$1,
-                    title: Text(
-                      item.$2,
-                      style: titleMedium,
-                    ),
-                    subtitle: subtitleBuilder?.call(context, index),
+                    title: Text(item.$2, style: titleMedium),
+                    subtitle: subtitleBuilder?.call(context, index, item.$1),
                   );
                 },
               ),
@@ -131,6 +130,7 @@ class _CdnSelectDialogState extends State<CdnSelectDialog> {
     final result = await VideoHttp.videoUrl(
       cid: 196018899,
       bvid: 'BV1fK4y1t7hj',
+      qn: VideoQuality.high1080.code,
       tryLook: false,
       videoType: VideoType.ugc,
     );
@@ -191,7 +191,7 @@ class _CdnSelectDialogState extends State<CdnSelectDialog> {
 
         final duration = DateTime.now().microsecondsSinceEpoch - start;
 
-        downloaded += count;
+        downloaded = count;
 
         if (duration > 15000000) {
           onClose();
@@ -248,7 +248,7 @@ class _CdnSelectDialogState extends State<CdnSelectDialog> {
       values: CDNService.values.map((i) => (i, i.desc)).toList(),
       value: VideoUtils.cdnService,
       subtitleBuilder: _cdnSpeedTest
-          ? (context, index) {
+          ? (context, index, type) {
               final item = _cdnResList[index];
               return ValueListenableBuilder(
                 valueListenable: item,

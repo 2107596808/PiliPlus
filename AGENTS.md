@@ -11,11 +11,11 @@ Dart 源码位于 `lib/`：
 - `assets/` — 图片、字体、着色器与截图。
 - `android/`、`ios/`、`windows/`、`linux/`、`macos/` — 平台代码与打包配置；`tool/` — 代码生成；`lib/scripts/` — CI 补丁与构建脚本。
 - `browser-extension/` — 独立 MV3 浏览器扩展（电脑端推送到手机）；`bilibili-evolved/` — Bilibili-Evolved 组件源码与编译产物，两者复用同一套 Cast HTTP 协议（`lib/services/cast/`，端口 26982）。
-- 目前没有 `test/` 目录，新增测试时放在 `test/` 下。
+- `test/` — 登录配置、账号、音视频质量、CDN、DLNA 与桌面窗口边界等回归测试。
 
 ## 构建、测试与开发命令
 
-Flutter 版本通过 FVM 固定为 3.47.1（`.fvmrc`），请使用 `fvm`：
+Flutter 版本通过 FVM 固定，以 `.fvmrc` 与 `pubspec.yaml` 中的版本为准，请使用 `fvm`：
 
 - `fvm flutter pub get` — 安装依赖（部分为 Git fork，改动依赖时同步更新 `pubspec.lock`）。
 - `fvm flutter run -d windows|linux|macos|<设备>` — 本地运行。
@@ -29,7 +29,7 @@ Flutter 版本通过 FVM 固定为 3.47.1（`.fvmrc`），请使用 `fvm`：
 
 本仓库发布到 `2107596808/PiliPlus`，更新检查也指向该仓库。本地发布步骤：
 
-1. 版本号：`versionName` 与 pubspec 一致（当前 2.1.1），`versionCode` 取 `git rev-list --count HEAD`（当前 5237）。
+1. 版本号：`versionName` 与 pubspec 一致，`versionCode` 取 `git rev-list --count HEAD`。
 2. 打 Android v8a 包时必须传 `pili.*` dart-define（`pili.time` 为当前 Unix 秒，`pili.hash` 为 `git rev-parse HEAD`）；否则 `BuildConfig.buildTime` 为 0，安装后每次启动都会误报更新：
 
 ```powershell
@@ -60,7 +60,7 @@ gh release create v<versionName> build/app/outputs/flutter-apk/app-arm64-v8a-rel
 ## 测试规范
 
 - 框架：`flutter_test`。测试放在 `test/`，文件名以 `_test.dart` 结尾（如 `test/models/xx_test.dart`）。
-- 目前仓库还没有提交测试，新增逻辑时尽量一并补充。
+- 上游已有回归测试；合并后运行 `fvm flutter test`，新增逻辑时按需补充。
 
 ## 提交与 Pull Request 规范
 
@@ -70,5 +70,6 @@ gh release create v<versionName> build/app/outputs/flutter-apk/app-arm64-v8a-rel
 
 ## 给 Agent 的注意事项
 
-- 不要修改生成代码：`lib/grpc/bilibili/`、`*.g.dart` 与平台构建产物已被排除在分析之外。
+- 不要手工修改生成代码：`lib/grpc/bilibili/`、`*.g.dart` 与平台构建产物已被排除在分析之外。
+- 本分支 Android 包名为 `com.shaoy.piliplus`；合并上游新增 Java/Kotlin 文件时，同步检查 package、静态导入、ProGuard keep 规则与 JNI 生成入口，避免引入旧包名 `com.example.piliplus`。
 - 改动保持在模块边界内：界面放 `pages/`、通用组件放 `common/widgets/`、网络代码放 `http/` 或 `grpc/`。

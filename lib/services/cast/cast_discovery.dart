@@ -9,14 +9,15 @@ abstract final class CastDiscovery {
   static Future<List<CastDevice>> discover({
     Duration timeout = const Duration(seconds: 3),
   }) async {
-    final localAddresses = (await NetworkInterface.list(
-      includeLoopback: false,
-      type: InternetAddressType.IPv4,
-    ))
-        .map((iface) => iface.addresses)
-        .expand((addresses) => addresses)
-        .map((address) => address.address)
-        .toSet();
+    final localAddresses =
+        (await NetworkInterface.list(
+              includeLoopback: false,
+              type: InternetAddressType.IPv4,
+            ))
+            .map((iface) => iface.addresses)
+            .expand((addresses) => addresses)
+            .map((address) => address.address)
+            .toSet();
     final socket = await RawDatagramSocket.bind(
       InternetAddress.anyIPv4,
       0,
